@@ -90,6 +90,7 @@ def history_payload(history: Any) -> dict[str, Any]:
         "result": history.final_result(),
         "successful": history.is_successful(),
         "durationSeconds": history.total_duration_seconds(),
+        "screenshot": screenshot,
     }
 
 
@@ -104,6 +105,7 @@ async def health() -> dict[str, Any]:
         "status": "ok",
         "browserUse": True,
         "radarConfigured": bool(RADAR_URL),
+        "workbenchVersion": "1.1.0",
     }
 
 
