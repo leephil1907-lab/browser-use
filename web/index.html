@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Browser Use Decision Workbench — real browser-agent execution and decision intelligence.">
+<meta name="theme-color" content="#0b0d0c">
+<title>Browser Use — Decision Workbench</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+  <a class="brand" href="#workbench" aria-label="Browser Use Decision Workbench"><span class="brand-mark"><span>BU</span></span><span class="brand-copy"><strong>Browser Use</strong><small>Decision Workbench</small></span></a>
+  <nav class="nav" aria-label="Primary"><a href="#workbench" data-route="workbench">Workbench</a><a href="#tasks" data-route="tasks">Tasks</a><a href="#radar" data-route="radar">Radar</a><a href="#saved" data-route="saved">Saved</a><a href="#docs" data-route="docs">Docs</a></nav>
+  <div class="top-actions"><span id="connection" class="status status-offline"><i></i><span>Disconnected</span></span><button id="commandBtn" class="icon-btn" title="Command palette">⌘ K</button><a class="github-link" href="https://github.com/leephil1907-lab/browser-use" target="_blank" rel="noreferrer">Source ↗</a></div>
+</header>
+
+<main>
+<section id="workbench" class="page active" data-page="workbench">
+  <div class="hero">
+    <div><p class="eyebrow">AUTONOMOUS BROWSER CONTROL</p><h1>Give the agent an objective.<br><em>Watch it work.</em></h1><p class="lede">A production control surface for Browser Use. Real sessions, real decisions, real outputs — with no fabricated activity.</p></div>
+    <div class="hero-badge"><span class="pulse"></span><div><strong id="heroStatus">Backend disconnected</strong><small id="heroSub">Connect a Browser Use server to begin</small></div></div>
+  </div>
+
+  <form id="taskForm" class="task-composer">
+    <div class="composer-top"><div><span class="panel-kicker">NEW OBJECTIVE</span><h2>What should the browser do?</h2></div><span class="shortcut">⌘ ↵</span></div>
+    <textarea id="taskInput" rows="3" required placeholder="Example: Research the latest pricing on the official product site and return the relevant plans…"></textarea>
+    <div class="composer-row">
+      <label class="field"><span>Browser</span><select id="browserMode"><option value="local">Local browser</option><option value="cloud">Cloud browser</option></select></label>
+      <label class="field model-field"><span>Model <b>optional</b></span><input id="model" type="text" placeholder="Use server default"></label>
+      <label class="field url-field"><span>Starting URL <b>optional</b></span><input id="targetUrl" type="url" placeholder="https://…"></label>
+      <button id="runBtn" class="primary-btn" type="submit"><span class="run-icon">▶</span><span>Run agent</span><kbd>⌘↵</kbd></button>
+    </div>
+  </form>
+
+  <div class="metric-strip" aria-label="Live workspace metrics">
+    <div><span>Backend</span><strong id="metricBackend">—</strong></div><div><span>Radar</span><strong id="metricRadar">—</strong></div><div><span>Tasks</span><strong id="metricTasks">0</strong></div><div><span>Last run</span><strong id="metricLast">—</strong></div>
+  </div>
+
+  <div class="workspace-grid">
+    <section class="panel browser-panel">
+      <div class="panel-head"><div><span class="panel-kicker">LIVE SESSION</span><h2>Browser viewport</h2></div><div class="panel-tools"><span id="agentState" class="state-pill">Idle</span><button id="clearSession" class="ghost-btn" type="button">Clear</button></div></div>
+      <div id="browserState" class="empty-state"><div class="empty-icon">◌</div><h3>Ready for a real session</h3><p>The live URL, page snapshot, extracted result and agent actions will appear here after a backend run.</p></div>
+      <div id="browserLive" class="hidden">
+        <div class="url-bar"><span class="secure-dot"></span><span id="liveUrl">about:blank</span><button id="copyUrl" class="mini-btn" type="button">Copy</button></div>
+        <div class="viewport-shell"><div class="viewport-top"><span></span><span></span><span></span><b id="liveTitle">Browser Use session</b></div><div id="livePage" class="live-page"></div><img id="liveScreenshot" class="live-screenshot hidden" alt="Latest browser screenshot"></div>
+        <div class="session-result hidden" id="sessionResult"><span>EXTRACTED RESULT</span><p id="resultText"></p></div>
+        <div class="timeline-wrap"><div class="timeline-title"><span>Agent trace</span><small id="stepCount">0 steps</small></div><div id="actionTimeline" class="timeline"></div></div>
+      </div>
+    </section>
+
+    <aside class="panel decision-panel">
+      <div class="panel-head"><div><span class="panel-kicker">DECISION LAYER</span><h2>Runtime reasoning</h2></div></div>
+      <div id="decisionState" class="empty-state compact"><div class="decision-orbit">◎</div><h3>No decision yet</h3><p>This panel only displays decisions and actions returned by the live agent.</p></div>
+      <div id="decisionLive" class="hidden"><div class="decision-focus"><span>LAST ACTION</span><strong id="decisionAction"></strong><small id="decisionSource"></small></div><dl class="decision-list"><div><dt>Intent</dt><dd id="decisionIntent">—</dd></div><div><dt>Result</dt><dd id="decisionOutcome">—</dd></div><div><dt>Duration</dt><dd id="decisionDuration">—</dd></div></dl><div class="subhead">Returned action trace</div><div id="decisionCandidates"></div></div>
+    </aside>
+  </div>
+</section>
+
+<section id="tasks" class="page" data-page="tasks">
+  <div class="page-head"><div><p class="eyebrow">EXECUTION HISTORY</p><h1>Tasks</h1><p class="lede">Only real requests recorded by the workbench backend are shown.</p></div><button class="secondary-btn" data-refresh="tasks">Refresh</button></div>
+  <div class="toolbar"><div class="search-wrap"><span>⌕</span><input id="taskSearch" type="search" placeholder="Search objectives…" aria-label="Search task history"></div><select id="taskStatus"><option value="">All statuses</option><option value="completed">Completed</option><option value="running">Running</option><option value="failed">Failed</option></select></div>
+  <div id="taskList" class="list"><div class="empty-state"><h3>No task history</h3><p>Run a real browser task to create the first record.</p></div></div>
+</section>
+
+<section id="radar" class="page" data-page="radar">
+  <div class="page-head"><div><p class="eyebrow">DECISION DISCOVERY</p><h1>Decision Radar</h1><p class="lede">Live discovery from the configured radar source. This client contains no bundled catalogue.</p></div><button class="secondary-btn" data-refresh="radar">Refresh</button></div>
+  <div class="toolbar radar-toolbar"><div class="search-wrap grow"><span>⌕</span><input id="radarSearch" type="search" placeholder="Search connected radar data…" aria-label="Search radar"></div><select id="radarCategory"><option value="">All categories</option></select><select id="radarSort"><option value="relevance">Relevance</option><option value="updated">Recently updated</option><option value="name">Name</option></select><label class="check"><input id="savedOnly" type="checkbox"> Saved only</label></div>
+  <div id="radarList" class="radar-grid"><div class="empty-state wide"><div class="radar-empty">⌁</div><h3>No radar source connected</h3><p>Configure <code>DECISION_RADAR_URL</code> on the server to load live projects.</p></div></div>
+</section>
+
+<section id="saved" class="page" data-page="saved">
+  <div class="page-head"><div><p class="eyebrow">BOOKMARKS</p><h1>Saved</h1><p class="lede">Your saved radar records, loaded from the connected source.</p></div><button class="secondary-btn" data-refresh="saved">Refresh</button></div>
+  <div id="savedList" class="radar-grid"><div class="empty-state wide"><h3>Nothing saved</h3><p>Save a live radar record to build your collection.</p></div></div>
+</section>
+
+<section id="docs" class="page" data-page="docs">
+  <div class="page-head"><div><p class="eyebrow">SYSTEM</p><h1>Integration</h1><p class="lede">The workbench stays thin: the server owns credentials and execution, while the interface visualizes returned runtime state.</p></div></div>
+  <div class="docs-grid">
+    <article class="panel doc-card"><span class="doc-number">01</span><span class="panel-kicker">AGENT EXECUTION</span><h2>Real Browser Use</h2><p>Objectives are passed to the repository's actual <code>Agent</code>. Browser sessions are created server-side and closed after execution.</p><pre>POST /api/agent/run</pre></article>
+    <article class="panel doc-card"><span class="doc-number">02</span><span class="panel-kicker">DECISION RADAR</span><h2>Live discovery</h2><p>The radar surface proxies a configured external source. No local seeds or fallback projects are shipped.</p><pre>GET /api/decision/projects</pre></article>
+    <article class="panel doc-card"><span class="doc-number">03</span><span class="panel-kicker">TRACE</span><h2>Evidence over theatre</h2><p>Actions, URLs, duration and extracted results are rendered only when returned by the agent history.</p><pre>GET /api/tasks</pre></article>
+    <article class="panel doc-card"><span class="doc-number">04</span><span class="panel-kicker">SECURITY</span><h2>Secrets stay server-side</h2><p>Model and radar credentials are environment configuration. Nothing sensitive is persisted in the browser client.</p><pre>BROWSER_USE_API_KEY
+DECISION_RADAR_URL</pre></article>
+  </div>
+</section>
+</main>
+
+<div id="commandPalette" class="modal hidden" role="dialog" aria-modal="true" aria-label="Command palette"><div class="modal-card command-card"><div class="command-search"><span>⌕</span><input id="commandInput" autofocus placeholder="Jump to a workspace…"></div><div id="commandResults"></div><footer>ESC close · ↑↓ navigate · ↵ open</footer></div></div>
+<div id="toast" class="toast hidden" role="status"></div>
+</div>
+<script src="./app.js" defer></script>
+</body>
+</html>
