@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Browser Use Decision Workbench — production browser-agent control surface.">
+  <title>Browser Use — Decision Workbench</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#workbench" aria-label="Browser Use Workbench">
+        <span class="brand-mark">BU</span><span>Browser Use</span><span class="brand-divider"></span><span class="muted">Decision Workbench</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#workbench" data-route="workbench">Workbench</a>
+        <a href="#tasks" data-route="tasks">Tasks</a>
+        <a href="#radar" data-route="radar">Decision Radar</a>
+        <a href="#saved" data-route="saved">Saved</a>
+        <a href="#docs" data-route="docs">Docs</a>
+      </nav>
+      <div class="top-actions">
+        <span id="connection" class="status status-offline"><i></i>Disconnected</span>
+        <button id="commandBtn" class="icon-btn" title="Command palette">⌘K</button>
+        <a class="github-link" href="https://github.com/leephil1907-lab/browser-use" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </div>
+    </header>
+
+    <main>
+      <section id="workbench" class="page active" data-page="workbench">
+        <div class="page-head">
+          <div><p class="eyebrow">BROWSER AGENT CONTROL</p><h1>Run a real browser task.</h1><p class="lede">Describe the objective. Browser Use decides and executes the browser actions through your configured backend.</p></div>
+          <button id="refreshWorkbench" class="secondary-btn">Refresh state</button>
+        </div>
+        <form id="taskForm" class="task-composer">
+          <label for="taskInput">Task objective</label>
+          <textarea id="taskInput" rows="4" required placeholder="Describe the browser task you want the agent to perform…"></textarea>
+          <div class="composer-row">
+            <div class="field">
+              <label for="browserMode">Browser</label>
+              <select id="browserMode"><option value="local">Local</option><option value="cloud">Cloud</option></select>
+            </div>
+            <div class="field">
+              <label for="model">Model</label>
+              <input id="model" type="text" placeholder="Configured server model">
+            </div>
+            <div class="field grow">
+              <label for="targetUrl">Starting URL <span class="muted">(optional)</span></label>
+              <input id="targetUrl" type="url" placeholder="https://…">
+            </div>
+            <button id="runBtn" class="primary-btn" type="submit">Run task <span>↗</span></button>
+          </div>
+        </form>
+
+        <div class="workspace-grid">
+          <section class="panel browser-panel">
+            <div class="panel-head"><div><span class="panel-kicker">LIVE SESSION</span><h2>Browser state</h2></div><span id="agentState" class="state-pill">Idle</span></div>
+            <div id="browserState" class="empty-state">
+              <div class="empty-icon">◌</div>
+              <h3>No active browser session</h3>
+              <p>Start a task after connecting the Browser Use backend. Live URL, page state, actions and extracted output will appear here.</p>
+            </div>
+            <div id="browserLive" class="hidden">
+              <div class="url-bar"><span>●</span><span id="liveUrl"></span></div>
+              <div id="livePage" class="live-page"></div>
+              <div id="actionTimeline" class="timeline"></div>
+            </div>
+          </section>
+
+          <aside class="panel decision-panel">
+            <div class="panel-head"><div><span class="panel-kicker">DECISION LAYER</span><h2>Agent-selected action</h2></div></div>
+            <div id="decisionState" class="empty-state compact">
+              <h3>Waiting for a real run</h3>
+              <p>No browser action is pre-authorized here. Actions are supplied by the configured agent at runtime.</p>
+            </div>
+            <div id="decisionLive" class="hidden">
+              <dl class="decision-list">
+                <div><dt>Intent</dt><dd id="decisionIntent"></dd></div>
+                <div><dt>Selected action</dt><dd id="decisionAction"></dd></div>
+                <div><dt>Source</dt><dd id="decisionSource"></dd></div>
+              </dl>
+              <div><h3 class="subhead">Candidates returned by backend</h3><div id="decisionCandidates"></div></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="tasks" class="page" data-page="tasks">
+        <div class="page-head"><div><p class="eyebrow">EXECUTION HISTORY</p><h1>Tasks</h1><p class="lede">Only tasks returned by the connected backend appear here.</p></div><button class="secondary-btn" data-refresh="tasks">Refresh</button></div>
+        <div class="toolbar"><input id="taskSearch" type="search" placeholder="Search task history…" aria-label="Search task history"><select id="taskStatus"><option value="">All statuses</option><option value="completed">Completed</option><option value="running">Running</option><option value="failed">Failed</option></select></div>
+        <div id="taskList" class="list empty-list"><div class="empty-state"><h3>No task history</h3><p>Run a real browser task to create history.</p></div></div>
+      </section>
+
+      <section id="radar" class="page" data-page="radar">
+        <div class="page-head"><div><p class="eyebrow">DECISION DISCOVERY</p><h1>Decision Radar</h1><p class="lede">Repository-backed project discovery. Nothing is preloaded into this client.</p></div><button class="secondary-btn" data-refresh="radar">Refresh</button></div>
+        <div class="toolbar radar-toolbar">
+          <input id="radarSearch" type="search" placeholder="Search connected radar data…" aria-label="Search radar">
+          <select id="radarCategory"><option value="">All categories</option></select>
+          <select id="radarSort"><option value="relevance">Relevance</option><option value="updated">Recently updated</option><option value="name">Name</option></select>
+          <label class="check"><input id="savedOnly" type="checkbox"> Saved only</label>
+        </div>
+        <div id="radarList" class="radar-grid"><div class="empty-state wide"><h3>No radar source connected</h3><p>Configure a real Decision Radar endpoint to load projects, categories, evidence and source links.</p></div></div>
+      </section>
+
+      <section id="saved" class="page" data-page="saved">
+        <div class="page-head"><div><p class="eyebrow">BOOKMARKS</p><h1>Saved</h1><p class="lede">Saved records are loaded from the connected source.</p></div><button class="secondary-btn" data-refresh="saved">Refresh</button></div>
+        <div id="savedList" class="radar-grid"><div class="empty-state wide"><h3>Nothing saved</h3><p>Save a real radar record to see it here.</p></div></div>
+      </section>
+
+      <section id="docs" class="page" data-page="docs">
+        <div class="page-head"><div><p class="eyebrow">INTEGRATION</p><h1>Docs</h1><p class="lede">Production connection surface for Browser Use and the Decision Radar layer.</p></div></div>
+        <div class="docs-grid">
+          <article class="panel"><span class="panel-kicker">BROWSER USE</span><h2>Agent execution</h2><p>The UI submits an objective to <code>/api/agent/run</code>. The server owns credentials, browser sessions and action selection. The client never invents browser actions.</p><pre>POST /api/agent/run
+{
+  "task": "…",
+  "browser": "local | cloud",
+  "model": "…",
+  "startingUrl": "…"
+}</pre></article>
+          <article class="panel"><span class="panel-kicker">DECISION RADAR</span><h2>Discovery source</h2><p>Radar data is requested from <code>/api/decision/projects</code>. Empty or unavailable responses stay empty; this interface contains no fallback catalogue.</p><pre>GET /api/decision/projects
+?q=…&category=…&sort=…&saved=true</pre></article>
+          <article class="panel"><span class="panel-kicker">DECISION</span><h2>Runtime routing</h2><p>The decision panel reports decisions actually returned by the backend. There is no client-side approval list or action allowlist.</p><pre>POST /api/decision/select
+{
+  "context": { "…": "…" }
+}</pre></article>
+          <article class="panel"><span class="panel-kicker">SECURITY</span><h2>Server-side configuration</h2><p>Browser Use credentials, model credentials and radar credentials must remain in server environment configuration. Do not store secrets in browser storage or ship them in frontend JavaScript.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <div id="commandPalette" class="modal hidden" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="modal-card command-card"><input id="commandInput" autofocus placeholder="Search pages or commands…"><div id="commandResults"></div></div>
+    </div>
+    <div id="toast" class="toast hidden" role="status"></div>
+  </div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
