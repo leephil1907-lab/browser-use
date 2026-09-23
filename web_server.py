@@ -200,6 +200,16 @@ async def decision_projects(
     return await radar_request("/projects", params)
 
 
+@app.post("/api/decision/select")
+async def decision_select(payload: dict[str, Any]) -> Any:
+    if not RADAR_URL:
+        raise HTTPException(status_code=503, detail="Decision Radar source is not configured.")
+    async with httpx.AsyncClient(timeout=20) as client:
+        response = await client.post(f"{RADAR_URL}/decision/select", json=payload)
+        response.raise_for_status()
+        return response.json()
+
+
 @app.post("/api/decision/saved")
 async def save_decision(payload: dict[str, Any]) -> Any:
     if not RADAR_URL:
