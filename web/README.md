@@ -24,6 +24,12 @@ The frontend expects:
 
 The exact response schema may be adapted by the backend. The UI intentionally renders only fields returned by the server.
 
+## Awesome Jev integration
+
+The Decision Radar is designed around the capabilities surfaced by the `awesome-jev-projects` repository: searchable discovery, category/tag filtering, source/evidence links, and inspectable decision points. The workbench does not copy or ship that repository's catalogue into the frontend. Configure a server-side `DECISION_RADAR_URL` adapter to expose those live records.
+
+The upstream radar and agent-skill resources are documented at `https://logicrw.github.io/awesome-jev-projects/en/` and `https://logicrw.github.io/awesome-jev-projects/skill.md`.
+
 ## Decision Radar
 
 The Decision Radar surface is designed to consume live data from the Awesome Jev Projects-derived source. It does not bundle a local catalogue. If the endpoint is unavailable or returns no records, the UI remains empty.
